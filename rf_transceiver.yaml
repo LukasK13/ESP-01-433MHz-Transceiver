@@ -1,0 +1,65 @@
+esphome:
+  name: rf_transceiver
+  platform: ESP8266
+  board: esp01_1m
+
+wifi:
+  ssid: !secret ssid
+  password: !secret wifi_pass
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "RF-Transceiver"
+    password: !secret ap_pass
+
+captive_portal:
+
+# Enable logging
+logger:
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+  password: !secret api_pass
+
+ota:
+  password: !secret ota_pass
+
+mqtt:
+  broker: 192.168.2.76
+  username: esp
+  password: !secret mqtt_pass
+  log_topic: rf_transceiver/log
+
+remote_receiver:
+  pin: GPIO3
+  dump: rc_switch
+  # Settings to optimize recognition of RF devices
+  tolerance: 50%
+  filter: 250us
+  idle: 4ms
+  buffer_size: 2kb
+
+remote_transmitter:
+  pin: GPIO2
+  # RF uses a 100% carrier signal
+  carrier_duty_percent: 100%
+
+switch:
+  - platform: template
+    name: livingroom_lights
+    optimistic: true
+    turn_on_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '011101011101010000001100'
+          protocol: 1
+          repeat:
+            times: 100
+            wait_time: 1ms
+    turn_off_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '011101011101010000000011'
+          protocol: 1
+          repeat:
+            times: 100
+            wait_time: 1ms
