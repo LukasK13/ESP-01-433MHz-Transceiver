@@ -17,6 +17,10 @@ captive_portal:
 # Enable logging
 logger:
   baud_rate: 0
+#  level: ERROR
+
+web_server:
+  port: 80
 
 # Enable Home Assistant API
 api:
@@ -24,12 +28,6 @@ api:
 
 ota:
   password: !secret ota_pass
-
-mqtt:
-  broker: 192.168.2.76
-  username: esp
-  password: !secret mqtt_pass
-  log_topic: rf_transceiver/log
 
 remote_receiver:
   pin: GPIO3
@@ -47,18 +45,55 @@ remote_transmitter:
 
 switch:
   - platform: template
-    name: livingroom_lights
+    name: "kitchen_light"
+    icon: "mdi:food"
     optimistic: true
     turn_on_action:
       - remote_transmitter.transmit_rc_switch_raw:
-          code: '011101011101010000001100'
+          code: '110101010101110000001100'
           protocol: 1
           repeat:
             times: 100
             wait_time: 1ms
     turn_off_action:
       - remote_transmitter.transmit_rc_switch_raw:
-          code: '011101011101010000000011'
+          code: '110101010101110000000011'
+          protocol: 1
+          repeat:
+            times: 100
+            wait_time: 1ms
+  - platform: template
+    name: "living_room_corner"
+    icon: "mdi:lightbulb"
+    optimistic: true
+    turn_on_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '110101011101010000001100'
+          protocol: 1
+          repeat:
+            times: 100
+            wait_time: 1ms
+    turn_off_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '110101011101010000000011'
+          protocol: 1
+          repeat:
+            times: 100
+            wait_time: 1ms
+  - platform: template
+    name: "printer"
+    icon: "mdi:printer"
+    optimistic: true
+    turn_on_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '110101010111010000001100'
+          protocol: 1
+          repeat:
+            times: 100
+            wait_time: 1ms
+    turn_off_action:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '110101010111010000000011'
           protocol: 1
           repeat:
             times: 100
